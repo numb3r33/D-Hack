@@ -25,6 +25,18 @@ def score(y, ypred):
 
     return cost_sum_total * 1. / (y.shape[0] * 50)
 
+def score_xgb(ypred, y):
+    y = y.get_label()
+    conf_mat = confusion_matrix(y, ypred)
+    cost_mat = np.array([[50, 10, 5], [-5, 50, 10], [-10, -5, 50]])
+    cost_mult = np.multiply(conf_mat, cost_mat)
+    cost_sum = cost_mult.sum(axis=0)
+    cost_sum_total = np.sum(cost_sum)
+
+    custom_score =  cost_sum_total * 1. / (y.shape[0] * 50)
+
+    return 'custom_score', custom_score
+
 def make_scorer_func():
     return make_scorer(score, greater_is_better=True)
 
